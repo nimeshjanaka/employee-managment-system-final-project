@@ -1,0 +1,25 @@
+.input-black input,
+.input-black input::placeholder {
+  color: black; 
+}
+
+.ant-checkbox-wrapper {
+    color: white;
+  }
+  
+
+.checkbox-white .ant-checkbox-inner {
+  background-color: white; 
+}
+
+.button-white {
+  color: white !important; 
+}
+.ant-form-item-label label {
+    color: white !important;
+    margin-left: 40%;
+  }
+  .ant-input {
+    color: black;
+  }
+
