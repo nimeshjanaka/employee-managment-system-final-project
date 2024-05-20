@@ -1,113 +1,52 @@
 import React from "react";
 import { Card, DatePicker } from "antd";
 import moment from "moment";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Attendence = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [filteredRecords, setFilteredRecords] = useState([]);
+  const [records, setRecords] = useState([]);
 
-  const records = [
-    {
-      date: "2024-04-08",
-      startTime: "09:00",
-      stopTime: "17:00",
-      duration: "8 hours",
-      description: "Full workday",
-    },
-    {
-      date: "2024-04-09",
-      startTime: "09:30",
-      stopTime: "17:30",
-      duration: "8 hours",
-      description: "Worked on project X",
-    },
-    {
-      date: "2024-04-10",
-      startTime: "10:00",
-      stopTime: "16:00",
-      duration: "6 hours",
-      description: "medical appointment",
-    },
-    {
-      date: "2024-04-08",
-      startTime: "09:00",
-      stopTime: "17:00",
-      duration: "8 hours",
-      description: "Full workday",
-    },
-    {
-      date: "2024-04-09",
-      startTime: "09:30",
-      stopTime: "17:30",
-      duration: "8 hours",
-      description: "Worked on project X",
-    },
-    {
-      date: "2024-04-10",
-      startTime: "10:00",
-      stopTime: "16:00",
-      duration: "6 hours",
-      description: "medical appointment",
-    },
-    {
-      date: "2024-04-09",
-      startTime: "09:30",
-      stopTime: "17:30",
-      duration: "8 hours",
-      description: "Worked on project X",
-    },
-    {
-      date: "2024-04-10",
-      startTime: "10:00",
-      stopTime: "16:00",
-      duration: "6 hours",
-      description: "medical appointment",
-    },
-    {
-      date: "2024-04-08",
-      startTime: "09:00",
-      stopTime: "17:00",
-      duration: "8 hours",
-      description: "Full workday",
-    },
-    {
-      date: "2024-04-09",
-      startTime: "09:30",
-      stopTime: "17:30",
-      duration: "8 hours",
-      description: "Worked on project X",
-    },
-    {
-      date: "2024-04-10",
-      startTime: "10:00",
-      stopTime: "16:00",
-      duration: "6 hours",
-      description: "medical appointment",
-    },
-    {
-      date: "2024-04-08",
-      startTime: "09:00",
-      stopTime: "17:00",
-      duration: "8 hours",
-      description: "Full workday",
-    },
-    {
-      date: "2024-04-09",
-      startTime: "09:30",
-      stopTime: "17:30",
-      duration: "8 hours",
-      description: "Worked on project X",
-    },
-    {
-      date: "2024-04-10",
-      startTime: "10:00",
-      stopTime: "16:00",
-      duration: "6 hours",
-      description: "medical appointment",
-    },
-  ];
+  useEffect(() => {
+    fetchAttendanceData();
+  }, []);
 
+  const fetchAttendanceData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/attendance`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      // Log the response to inspect its structure
+      console.log("API Response: ", response.data.payload.items);
+
+      setRecords(response.data.payload.items);
+
+      // Check if the response data is an array
+    } catch (error) {
+      console.error("Error fetching attendance data: ", error);
+    }
+  };
+
+  const calculateDuration = (inTime, outTime) => {
+    const format = "HH:mm:ss";
+    const start = moment(inTime, format);
+    const end = moment(outTime, format);
+    const duration = moment.duration(end.diff(start));
+    const hours = Math.floor(duration.asHours());
+    const minutes = duration.minutes();
+    const seconds = duration.seconds();
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
   const handleDateChange = (date, dateString) => {
     setSelectedDate(dateString);
     const filtered = records.filter((record) => record.date === dateString);
@@ -168,9 +107,9 @@ const Attendence = () => {
             {(selectedDate ? filteredRecords : records).map((record, index) => (
               <tr key={index}>
                 <td>{record.date}</td>
-                <td>{record.startTime}</td>
-                <td>{record.stopTime}</td>
-                <td>{record.duration}</td>
+                <td>{record.inTime}</td>
+                <td>{record.outTime}</td>
+                <td>{calculateDuration(record.inTime, record.outTime)}</td>
                 <td>{record.description}</td>
               </tr>
             ))}

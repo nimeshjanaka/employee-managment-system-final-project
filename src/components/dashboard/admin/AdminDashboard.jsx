@@ -3,11 +3,17 @@ import { Card, DatePicker, Input } from "antd";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
 import axios from "axios";
+import moment from "moment";
 
 const AdminDashboard = () => {
   const [filters, setFilters] = useState({ date: null, empNo: "" });
   const [todayEmployees, setTodayEmployees] = useState([]);
   const [accessToken, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    setAccessToken(token);
+  }, []);
 
   useEffect(() => {
     const fetchTodayEmployees = async () => {
@@ -30,7 +36,6 @@ const AdminDashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        data: data,
       };
 
       try {
@@ -156,6 +161,19 @@ const AdminDashboard = () => {
     },
   };
 
+  const calculateDuration = (inTime, outTime) => {
+    const format = "HH:mm:ss";
+    const start = moment(inTime, format);
+    const end = moment(outTime, format);
+    const duration = moment.duration(end.diff(start));
+    const hours = Math.floor(duration.asHours());
+    const minutes = duration.minutes();
+    const seconds = duration.seconds();
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
   return (
     <div style={{ background: "#0D0D0D", color: "white" }}>
       <div
@@ -201,7 +219,7 @@ const AdminDashboard = () => {
           >
             <div className="px-6 py-4">
               <div className="fs-3">Total Employee</div>
-              <p className="text-gray-700 text-base">45 Employee</p>
+              <p className="text-gray-700 text-base">15 Employee</p>
             </div>
           </Card>
         </Col>
@@ -213,7 +231,7 @@ const AdminDashboard = () => {
           >
             <div className="px-6 py-4">
               <div className="fs-3">Permanent Employee</div>
-              <p className="text-gray-700 text-base">38 Employees</p>
+              <p className="text-gray-700 text-base">10 Employees</p>
             </div>
           </Card>
         </Col>
@@ -225,7 +243,7 @@ const AdminDashboard = () => {
           >
             <div className="px-6 py-4">
               <div className="fs-3">Intern Employee</div>
-              <p className="text-gray-700 text-base">7 Employee</p>
+              <p className="text-gray-700 text-base">5 Employee</p>
             </div>
           </Card>
         </Col>
@@ -250,10 +268,12 @@ const AdminDashboard = () => {
           <tbody>
             {filteredEmployees.map((employee, index) => (
               <tr key={index}>
-                <td>{employee.empNo}</td>
-                <td>{employee.name}</td>
+                <td>{employee.id}</td>
+                <td>
+                  {employee.user.firstName + " " + employee.user.lastName}
+                </td>
                 <td>{employee.date}</td>
-                <td>{employee.workingHours}</td>
+                <td>{calculateDuration(employee.inTime, employee.outTime)}</td>
                 <td>{employee.description}</td>
               </tr>
             ))}

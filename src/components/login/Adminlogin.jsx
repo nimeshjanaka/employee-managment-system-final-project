@@ -23,8 +23,8 @@ const Adminlogin = () => {
         );
 
         localStorage.setItem(
-          "user",
-          JSON.stringify(response?.data?.payload?.user)
+          "email",
+          JSON.stringify(response?.data?.payload?.email)
         );
 
         navigate("/admin/admin-dashboard");
