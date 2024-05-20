@@ -16,11 +16,14 @@ const Employeelogin = () => {
       if (response.status === 200) {
         message.success("Successfully logged in.");
         console.log(response?.data);
-        localStorage.setItem("accessToken", response?.data?.payload?.accessToken);
+        localStorage.setItem(
+          "accessToken",
+          response?.data?.payload?.accessToken
+        );
 
         localStorage.setItem(
-          "user",
-          JSON.stringify(response?.data?.payload?.user)
+          "email",
+          JSON.stringify(response?.data?.payload?.email)
         );
 
         navigate("/dashboard");

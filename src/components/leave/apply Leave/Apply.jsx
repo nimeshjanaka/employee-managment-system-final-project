@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Form, DatePicker, Select, Input, Button } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { Employees } from "../../../assets/Index";
 
 const { Option } = Select;
 
@@ -36,6 +37,23 @@ const config = {
 
 const Apply = () => {
   const [accessToken, setAccessToken] = useState(null);
+  const [employees, setEmployees] = useState([]);
+
+  const fetchEmployees = async (token) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/employees`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEmployees(response.data);
+    } catch (error) {
+      console.log("Error fetching employees: ", error);
+    }
+  };
 
   const onFinish = async (fieldsValue) => {
     // Extracting and formatting date values from the form
@@ -50,7 +68,7 @@ const Apply = () => {
       fromDate: values.start_date_picker,
       toDate: values.end_date_picker,
       reason: values.reason,
-      SuggestedCoworkerId: 2,
+      SuggestedCoworkerId: values.assignee,
     });
 
     let config = {
@@ -102,6 +120,7 @@ const Apply = () => {
           onFinish={onFinish}
           initialValues={{ remember: true }}
           autoComplete="off"
+          layout="vertical"
           // style={{
           //   marginRight: "160px",
           // }}
@@ -139,7 +158,13 @@ const Apply = () => {
               { required: true, message: "Please input an assignee name!" },
             ]}
           >
-            <Input />
+            <Select placeholder="Select an employee">
+              {Employees.map((employee) => (
+                <Option key={employee.id} value={employee.id}>
+                  {employee.name}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item

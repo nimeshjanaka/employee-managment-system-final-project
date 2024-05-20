@@ -8,7 +8,7 @@ const EmployeeDashboard = () => {
   const navigate = useNavigate();
 
   const [time, setTime] = useState(
-    Number(localStorage.getItem("working_hours"))
+    Number(localStorage.getItem("working_hours")) || 0
   );
   const [isRunning, setIsRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -42,13 +42,13 @@ const EmployeeDashboard = () => {
       .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const calculateDuration = () => {
-    if (startTime && stopTime) {
-      const durationInSeconds = Math.floor((stopTime - startTime) / 1000);
-      return durationInSeconds;
-    }
-    return 0;
-  };
+  // const calculateDuration = () => {
+  //   if (startTime && stopTime) {
+  //     const durationInSeconds = Math.floor((stopTime - startTime) / 1000);
+  //     return durationInSeconds;
+  //   }
+  //   return 0;
+  // };
 
   const handleSubmit = async () => {
     setTime(0);
@@ -83,12 +83,19 @@ const EmployeeDashboard = () => {
 
         const response = await axios.request(config);
         console.log("fetchTodayEmployees : ", response.data);
+
+        // Reset state
+        setTime(0);
+        localStorage.setItem("working_hours", 0);
+        setDescription("");
+        setStartTime(null);
+        setStopTime(null);
+
+        navigate("/attendance");
       } catch (error) {
         console.log(error);
       }
     }
-
-    navigate("/attendance");
   };
 
   useEffect(() => {

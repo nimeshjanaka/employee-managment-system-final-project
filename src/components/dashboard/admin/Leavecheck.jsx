@@ -33,7 +33,9 @@ const Leavecheck = () => {
   };
 
   useEffect(() => {
-    fetchLeaves();
+    if (accessToken) {
+      fetchLeaves();
+    }
   }, [accessToken]);
 
   const handleApprove = async (leaveId, suggestedEmployeeId) => {
@@ -59,6 +61,8 @@ const Leavecheck = () => {
     try {
       const response = await axios.request(config);
       console.log("handleApprove : ", response.data);
+      // Refresh leave requests after approval
+      fetchLeaves();
     } catch (error) {
       console.log(error);
     }
@@ -88,6 +92,8 @@ const Leavecheck = () => {
     try {
       const response = await axios.request(config);
       console.log("handleApprove : ", response.data);
+      // Refresh leave requests after rejection
+      fetchLeaves();
     } catch (error) {
       console.log(error);
     }
@@ -98,8 +104,9 @@ const Leavecheck = () => {
       <h1>Employee Leave Request Details</h1>
       {leaves.map((leave, index) => (
         <Card key={index} style={{ marginBottom: "16px" }}>
-          Employee ID: {leave.employee} <br />
-          Full Name: {leave.employee} <br />
+          Employee ID: {leave.employee?.id} <br />
+          Full Name:{" "}
+          {leave.employee?.firstName + " " + leave.employee?.lastName} <br />
           Date: {leave.fromDate} to {leave.toDate} <br />
           Reason: {leave.reason}
           <br />
