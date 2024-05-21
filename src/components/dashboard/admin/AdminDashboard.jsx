@@ -258,7 +258,7 @@ const AdminDashboard = () => {
         <table className="w-full" style={styles.tableLayout}>
           <thead>
             <tr>
-              <th>Emp No</th>
+              <th>Number</th>
               <th>Name</th>
               <th>Date</th>
               <th>Working Hours</th>

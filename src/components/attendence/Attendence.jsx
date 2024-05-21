@@ -8,10 +8,32 @@ const Attendence = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [records, setRecords] = useState([]);
+  const [data, setData] = useState([]);
+
+  const userEmail = localStorage.getItem("email");
+
+  // useEffect(() => {
+  //   const userEmail = localStorage.getItem("email");
+  //   setUseremail(userEmail);
+  //   console.log(userEmail);
+  // }, []);
 
   useEffect(() => {
     fetchAttendanceData();
-  }, []);
+  }, [userEmail]);
+
+  useEffect(() => {
+    if (userEmail && data) {
+      console.log("userEmail ", userEmail);
+      console.log("data : ", data);
+
+      const filteredArray = data?.filter(
+        (item) => item.user && item.user.email === userEmail.replace(/"/g, "")
+      );
+      console.log("filterd array :", filteredArray);
+      setRecords(filteredArray);
+    }
+  }, [userEmail, data]);
 
   const fetchAttendanceData = async () => {
     try {
@@ -24,10 +46,12 @@ const Attendence = () => {
           },
         }
       );
-      // Log the response to inspect its structure
-      console.log("API Response: ", response.data.payload.items);
 
-      setRecords(response.data.payload.items);
+      const data = response.data.payload.items;
+      setData(data);
+
+      // Log the response to inspect its structure
+      //console.log("API Response: ", response.data.payload.items);
 
       // Check if the response data is an array
     } catch (error) {
