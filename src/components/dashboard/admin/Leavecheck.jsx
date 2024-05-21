@@ -101,7 +101,7 @@ const Leavecheck = () => {
 
   return (
     <div>
-      <h1>Employee Leave Request Details</h1>
+      <h1 style={{ fontSize: "24px" }}>Employee Leave Request Details</h1>
       {leaves.map((leave, index) => (
         <Card key={index} style={{ marginBottom: "16px" }}>
           Employee ID: {leave.employee?.id} <br />
